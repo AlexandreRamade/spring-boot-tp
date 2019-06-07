@@ -3,8 +3,6 @@ package com.training.spring.bigcorp.config.properties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Component
-@ConfigurationProperties(prefix = "bigcorp")
 public class BigCorpApplicationMeasureProperties {
     private int defaultFixed;
     private int defaultSimulated;

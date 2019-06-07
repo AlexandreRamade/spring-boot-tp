@@ -25,4 +25,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	compile('org.springframework.boot:spring-boot-starter-jdbc')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('com.h2database:h2')
 }

@@ -2,6 +2,7 @@ package com.training.spring.bigcorp.service;
 
 import com.training.spring.bigcorp.config.Monitored;
 import com.training.spring.bigcorp.model.Captor;
+import com.training.spring.bigcorp.repository.CaptorDao;
 import com.training.spring.bigcorp.service.measure.MeasureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CaptorServiceImpl implements CaptorService{
@@ -28,6 +30,10 @@ public class CaptorServiceImpl implements CaptorService{
      */
     private MeasureService simulatedMeasureService;
 
+
+    private CaptorDao captorDao;
+
+
     public CaptorServiceImpl() {
     }
 
@@ -46,8 +52,9 @@ public class CaptorServiceImpl implements CaptorService{
         Set<Captor> captors = new HashSet<>();
         if (siteId == null) {
             return captors;
+        } else {
+            captors = captorDao.findSiteById(siteId).stream().collect(Collectors.toSet());
         }
-        captors.add(new Captor("Capteur A"));
         return captors;
     }
 

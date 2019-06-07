@@ -48,26 +48,4 @@ public class SiteServiceImpl implements SiteService {
         return site;
     }
 
-    @Override
-    public void readFile(String path) {
-        InputStream stream = null;
-        try {
-            Resource resource = ressourceLoader.getResource(path);
-
-            stream = resource.getInputStream();
-            Scanner scanner = new Scanner(stream).useDelimiter("\\n");
-            while(scanner.hasNext()) {
-                System.out.println(scanner.next());
-            }
-        } catch (IOException e) {
-            LOGGER.error("Erreur sur le chargement fichier", e);
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                stream = null;
-            }
-        }
-
-    }
 }

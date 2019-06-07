@@ -14,6 +14,9 @@ public class Captor {
      */
     private String name;
 
+    private Site site;
+
+
     @Deprecated
     public Captor() {
         // Use for serializer or deserializer
@@ -29,11 +32,13 @@ public class Captor {
      * Constructor to use with required property
      * @param name
      */
-    public Captor(String name) {
+    public Captor(String name, Site site) {
         this.name = name;
+        this.site = site;
     }
-    public Captor(String name, PowerSource powerSource) {
+    public Captor(String name, Site site, PowerSource powerSource) {
         this.name = name;
+        this.site = site;
         this.powerSource = powerSource;
     }
 
@@ -51,6 +56,22 @@ public class Captor {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Site getSite() {
+        return site;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
+    }
+
+    public PowerSource getPowerSource() {
+        return powerSource;
+    }
+
+    public void setPowerSource(PowerSource powerSource) {
+        this.powerSource = powerSource;
     }
 
     @Override

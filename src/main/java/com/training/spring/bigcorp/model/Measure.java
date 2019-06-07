@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public class Measure {
 
+    private Long id;
+
     /**
      * Moment the measurement was made
      */
@@ -57,6 +59,13 @@ public class Measure {
         return Objects.hash(instant, valueInWatt, captor);
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Instant getInstant() {
         return instant;
