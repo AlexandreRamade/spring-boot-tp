@@ -1,22 +1,27 @@
-package com.training.spring.bigcorp.model;
+package com.training.spring.bigcorp.config.properties;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-public class ApplicationInfo {
+@Component
+@ConfigurationProperties(prefix = "bigcorp")
+public class BigCorpApplicationProperties {
 
     private String name;
-
     private Integer version;
-
     private Set<String> emails;
-
     private String webSiteUrl;
 
+    @NestedConfigurationProperty
+    private BigCorpApplicationMeasureProperties measure;
 
-    public ApplicationInfo() {
+    public BigCorpApplicationProperties() {
     }
 
-    public ApplicationInfo(String name, Integer version, Set<String> emails, String webSiteUrl) {
+    public BigCorpApplicationProperties(String name, Integer version, Set<String> emails, String webSiteUrl) {
         this.name = name;
         this.version = version;
         this.emails = emails;
@@ -53,5 +58,13 @@ public class ApplicationInfo {
 
     public void setWebSiteUrl(String webSiteUrl) {
         this.webSiteUrl = webSiteUrl;
+    }
+
+    public BigCorpApplicationMeasureProperties getMeasure() {
+        return measure;
+    }
+
+    public void setMeasure(BigCorpApplicationMeasureProperties measure) {
+        this.measure = measure;
     }
 }
