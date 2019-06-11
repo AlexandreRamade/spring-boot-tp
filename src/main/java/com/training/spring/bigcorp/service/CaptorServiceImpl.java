@@ -53,7 +53,7 @@ public class CaptorServiceImpl implements CaptorService{
         if (siteId == null) {
             return captors;
         } else {
-            captors = captorDao.findSiteById(siteId).stream().collect(Collectors.toSet());
+            captors = captorDao.findBySiteId(siteId).stream().collect(Collectors.toSet());
         }
         return captors;
     }

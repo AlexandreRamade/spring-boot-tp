@@ -1,18 +1,18 @@
 package com.training.spring.bigcorp.repository;
 
 import com.training.spring.bigcorp.model.Site;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Transactional
 public class SiteDaoImpl implements SiteDao {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -21,41 +21,43 @@ public class SiteDaoImpl implements SiteDao {
     }
 
     @Override
-    public void create(Site element) {
-
+    public void create(Site site) {
+        jdbcTemplate.update("insert into SITE (id, name) values (:id, :name)", new MapSqlParameterSource().addValue("id", site.getId()).addValue("name", site.getName()));
     }
 
     @Override
-    public Site findById(String s) {
-        return null;
+    public Site findById(String id) {
+        try {
+            return jdbcTemplate.queryForObject("select id, name from SITE where id= :id", new MapSqlParameterSource("id", id), this::siteMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    private Site siteMapper(ResultSet rs, int rowNum) throws SQLException {
+        Site site = new Site(rs.getString("name"));
+        site.setId(rs.getString("id"));
+        return site;
     }
 
     @Override
     public List<Site> findAll() {
-        List<Site> sites = new ArrayList<>();
-        try(Connection conn = dataSource.getConnection()) {
-            String sql = "select id, name from SITE";
-            try(ResultSet resultSet = stmt.executeQuery()) {
-                while(resultSet.next()) {
-                    Site s = new Site(resultSet.getString("name"));
-                    s.setId(resultSet.getString("id"));
-                    sites.add(s);
-                }
-            }
-        } catch(SQLException e) {
-            throw new DatabaseException("impossible de lire les sites", e);
-        }
-        return sites;
+        return jdbcTemplate.query("select id, name from SITE", (rs, rownum) -> {
+        Site s = new Site(rs.getString("name"));
+        s.setId(rs.getString("id"));
+        return s;
+        });
     }
 
+
     @Override
-    public void update(Site element) {
+    public void update(Site site) {
         jdbcTemplate.update("update SITE set name=:name where id=:id",
-                new MapSqlParameterSource().addValue("id", site.getId())).addValue("name", site.getName());
+                new MapSqlParameterSource().addValue("id", site.getId()).addValue("name", site.getName()));
     }
 
     @Override
-    public void deleteById(String s) {
-
+    public void deleteById(String id) {
+        jdbcTemplate.update("delete from SITE where id= :id", new MapSqlParameterSource("id", id));
     }
 }

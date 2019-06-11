@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface CaptorDao extends CrudDao<Captor, String> {
 
-    List<Captor> findSiteById(String siteId);
+    List<Captor> findBySiteId(String siteId);
 }
