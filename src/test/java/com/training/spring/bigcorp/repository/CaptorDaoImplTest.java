@@ -4,23 +4,20 @@ import com.training.spring.bigcorp.model.Captor;
 import com.training.spring.bigcorp.model.Site;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Repository;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import org.hibernate.exception.ConstraintViolationException;
 import java.util.List;
+import java.util.Optional;
 
 
 @RunWith(SpringRunner.class)
@@ -30,6 +27,9 @@ public class CaptorDaoImplTest {
 
     @Autowired
     private CaptorDao captorDao;
+
+    @Autowired
+    SiteDao siteDao;
 
     @Autowired
     private EntityManager entityManager;
@@ -49,7 +49,7 @@ public class CaptorDaoImplTest {
         Assertions.assertThat(captorDao.findAll()).hasSize(2);
         Site site = new Site("Nouveau site");
         site.setId("site1");
-        captorDao.persist(new Captor("New captor", site));
+        captorDao.save(new Captor("New captor", site));
 
         Assertions.assertThat(captorDao.findAll())
                 .hasSize(3)
@@ -59,16 +59,16 @@ public class CaptorDaoImplTest {
 
     @Test
     public void findById() {
-        Captor captor = captorDao.findById("c1");
-        Assertions.assertThat(captor.getId()).isEqualTo("c1");
-        Assertions.assertThat(captor.getName()).isEqualTo("Eolienne");
-        Assertions.assertThat(captor.getSite().getName()).isEqualTo("Bigcorp Lyon");
+        Optional<Captor> captor = captorDao.findById("c1");
+        Assertions.assertThat(captor).get().extracting("id").containsExactly("c1");
+        Assertions.assertThat(captor).get().extracting("name").containsExactly("Eolienne");
+        Assertions.assertThat(captor).get().extracting("site").extracting("name").containsExactly("Bigcorp Lyon");
     }
 
     @Test
     public void findByIdShouldReturnNullWhenIdUnknown() {
-        Captor captor = captorDao.findById("unkwown");
-        Assertions.assertThat(captor).isNull();
+        Optional<Captor> captor = captorDao.findById("unkwown");
+        Assertions.assertThat(captor).isEmpty();
     }
 
     @Test
@@ -83,36 +83,59 @@ public class CaptorDaoImplTest {
 
     @Test
     public void update() {
-        Captor captor = captorDao.findById("c1");
-        Assertions.assertThat(captor.getName()).isEqualTo("Eolienne");
+        Optional<Captor> captor = captorDao.findById("c1");
+        Assertions.assertThat(captor).get().extracting("name").containsExactly("Eolienne");
 
-        captor.setName("Captor updated");
-        captorDao.persist(captor);
+        captor.ifPresent(c -> {
+            c.setName("Captor updated");
+            captorDao.save(c);
+        });
 
         captor = captorDao.findById("c1");
-        Assertions.assertThat(captor.getName()).isEqualTo("Captor updated");
+        Assertions.assertThat(captor).get().extracting("name").containsExactly("Captor updated");
 
     }
 
     @Test
     public void delete() {
 
-        Captor captor = new Captor("Nouveau capteur", captorDao.findById("c1").getSite());
-        captorDao.persist(captor);
+        Captor newCaptor = new Captor("Nouveau capteur", captorDao.findById("c1").get().getSite());
+        captorDao.save(newCaptor);
         Assertions.assertThat(captorDao.findAll()).hasSize(3);
-        captorDao.delete(captor);
+        captorDao.delete(newCaptor);
         Assertions.assertThat(captorDao.findAll()).hasSize(2);
 
     }
 
     @Test
     public void deleteByIdShouldThrowExceptionWhenIdIsUsedAsForeignKey() {
-        Captor captor = captorDao.findById("c1");
+        Captor captor = captorDao.getOne("c1");
         Assertions.assertThatThrownBy(() -> {
                     captorDao.delete(captor);
                     entityManager.flush();
                 }).isExactlyInstanceOf(PersistenceException.class)
                 .hasCauseExactlyInstanceOf(ConstraintViolationException.class);
     }
+
+
+    @Test
+    public void findByExample() {
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("name", match -> match.ignoreCase().contains())
+                .withMatcher("site", match -> match.contains())
+                .withIgnorePaths("id", "powerSource", "defaultPowerInWatt")
+                .withIgnoreNullValues();
+
+        Site site = siteDao.getOne("site1");
+        //Captor captor = new Captor("olien", captorDao.findById("c1").get().getSite());
+        Captor captor = new Captor("Eolienne",site);
+        List<Captor> captors = captorDao.findAll(Example.of(captor, matcher));
+
+        Assertions.assertThat(captors)
+                .hasSize(1)
+                .extracting("id", "name")
+                .containsExactly(Tuple.tuple("c1", "Eolienne"));
+    }
+
 
 }

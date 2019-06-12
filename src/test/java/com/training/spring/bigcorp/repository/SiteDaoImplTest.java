@@ -1,24 +1,21 @@
 package com.training.spring.bigcorp.repository;
 
-import com.training.spring.bigcorp.model.Captor;
 import com.training.spring.bigcorp.model.Site;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -34,24 +31,24 @@ public class SiteDaoImplTest {
     @Test
     public void create() {
         Assertions.assertThat(siteDao.findAll()).hasSize(1);
-        siteDao.persist(new Site("Nouveau site"));
+        siteDao.save(new Site("Nouveau site"));
 
         Assertions.assertThat(siteDao.findAll())
                 .hasSize(2)
-                .extracting(Site::getName)
+                .extracting("name")
                 .contains("Bigcorp Lyon", "Nouveau site");
     }
 
     @Test
     public void findById() {
-        Site site = siteDao.findById("site1");
-        Assertions.assertThat(site.getName()).isEqualTo("Bigcorp Lyon");
+        Optional<Site> site = siteDao.findById("site1");
+        Assertions.assertThat(site).get().extracting("name").containsExactly("Bigcorp Lyon");
     }
 
     @Test
     public void findByIdShouldReturnNullWhenIdUnknown() {
-        Site site = siteDao.findById("unkwown");
-        Assertions.assertThat(site).isNull();
+        Optional<Site> site = siteDao.findById("unkwown");
+        Assertions.assertThat(site).isEmpty();
     }
 
     @Test
@@ -59,36 +56,39 @@ public class SiteDaoImplTest {
         List<Site> sites = siteDao.findAll();
         Assertions.assertThat(sites)
                 .hasSize(1)
-                .extracting(Site::getName)
-                .contains("Bigcorp Lyon");
+                .extracting("id", "name")
+                .contains(Tuple.tuple("site1", "Bigcorp Lyon"));
     }
 
     @Test
     public void update() {
-        Site site = siteDao.findById("site1");
-        Assertions.assertThat(site.getName()).isEqualTo("Bigcorp Lyon");
+        Optional<Site> site = siteDao.findById("site1");
+        Assertions.assertThat(site).get().extracting("name").containsExactly("Bigcorp Lyon");
 
-        site.setName("Site updated");
-        siteDao.persist(site);
+        site.ifPresent(s -> {
+            s.setName("Site updated");
+            siteDao.save(s);
+        });
+
 
         site = siteDao.findById("site1");
-        Assertions.assertThat(site.getName()).isEqualTo("Site updated");
+        Assertions.assertThat(site).get().extracting("name").containsExactly("Site updated");
 
     }
 
     @Test
     public void deleteById() {
         Site newSite = new Site("Nouveau site");
-        siteDao.persist(newSite);
+        siteDao.save(newSite);
         Assertions.assertThat(siteDao.findById(newSite.getId())).isNotNull();
 
         siteDao.delete(newSite);
-        Assertions.assertThat(siteDao.findById(newSite.getId())).isNull();
+        Assertions.assertThat(siteDao.findById(newSite.getId())).isEmpty();
     }
 
     @Test
     public void deleteByIdShouldThrowExceptionWhenIdIsUsedAsForeignKey() {
-        Site site = siteDao.findById("site1");
+        Site site = (Site) siteDao.getOne("site1");
         Assertions.assertThatThrownBy(() -> {
             siteDao.delete(site);
             entityManager.flush();
