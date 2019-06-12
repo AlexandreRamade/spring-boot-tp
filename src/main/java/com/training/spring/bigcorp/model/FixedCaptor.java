@@ -3,13 +3,14 @@ package com.training.spring.bigcorp.model;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
 @DiscriminatorValue("FIXED")
 public class FixedCaptor extends Captor {
 
-    @Column(name="default_power_in_watt")
+    @NotNull
     private Integer defaultPowerInWatt;
 
     public FixedCaptor() {

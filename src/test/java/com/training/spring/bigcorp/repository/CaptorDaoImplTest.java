@@ -1,9 +1,6 @@
 package com.training.spring.bigcorp.repository;
 
-import com.training.spring.bigcorp.model.Captor;
-import com.training.spring.bigcorp.model.FixedCaptor;
-import com.training.spring.bigcorp.model.RealCaptor;
-import com.training.spring.bigcorp.model.Site;
+import com.training.spring.bigcorp.model.*;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
 import org.junit.Test;
@@ -154,6 +151,36 @@ public class CaptorDaoImplTest {
         // Si maintenant je réessaie d'enregistrer captor, comme le numéro de version est à 0 je dois avoir une exception
         Assertions.assertThatThrownBy(() -> captorDao.save(captor))
                 .isExactlyInstanceOf(ObjectOptimisticLockingFailureException.class);
+    }
+
+    @Test
+    public void createShouldThrowExceptionWhenNameIsNull() {
+        Assertions.assertThatThrownBy(() -> {
+            captorDao.save(new RealCaptor(null, captorDao.getOne("c1").getSite()));
+            entityManager.flush();
+        })
+                .isExactlyInstanceOf(javax.validation.ConstraintViolationException.class)
+                .hasMessageContaining("ne peut pas être nul");
+    }
+
+    @Test
+    public void createShouldThrowExceptionWhenNameSizeIsInvalid() {
+        Assertions.assertThatThrownBy(() -> {
+            captorDao.save(new RealCaptor("ab", captorDao.getOne("c1").getSite()));
+            entityManager.flush();
+        })
+                .isExactlyInstanceOf(javax.validation.ConstraintViolationException.class)
+                .hasMessageContaining("la taille doit être comprise entre 3 et 100");
+    }
+
+    @Test
+    public void createSimulatedCaptorShouldThrowExceptionWhenMinMaxAreInvalid() {
+        Assertions.assertThatThrownBy(() -> {
+                    captorDao.save(new SimulatedCaptor("Mon site", captorDao.getOne("c1").getSite(), 10, 5));
+                    entityManager.flush();
+                })
+                .isExactlyInstanceOf(javax.validation.ConstraintViolationException.class)
+                .hasMessageContaining("minPowerInWatt should be less than maxPowerInWatt");
     }
 
 
