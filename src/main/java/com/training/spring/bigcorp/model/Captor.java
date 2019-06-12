@@ -6,7 +6,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name="CAPTOR")
-public class Captor {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class Captor {
     /**
      * Captor id
      */
@@ -23,17 +24,6 @@ public class Captor {
     @JoinColumn(name="site_id", nullable = false)
     private Site site;
 
-    /**
-     * Source type to measure
-     * @see PowerSource
-      */
-    @Column(name="power_source", nullable = false)
-    @Enumerated(EnumType.STRING)
-    public PowerSource powerSource;
-
-    @Column(name="default_power_in_watt")
-    public Integer defaultPowerInWatt;
-
     public Captor() {
     }
 
@@ -44,14 +34,6 @@ public class Captor {
     public Captor(String name, Site site) {
         this.name = name;
         this.site = site;
-        this.powerSource = PowerSource.SIMULATED;
-        this.defaultPowerInWatt = 1000000;
-    }
-    public Captor(String name, Site site, PowerSource powerSource) {
-        this.name = name;
-        this.site = site;
-        this.powerSource = powerSource;
-        this.defaultPowerInWatt = 1000000;
     }
 
     public String getId() {
@@ -78,21 +60,6 @@ public class Captor {
         this.site = site;
     }
 
-    public PowerSource getPowerSource() {
-        return powerSource;
-    }
-
-    public void setPowerSource(PowerSource powerSource) {
-        this.powerSource = powerSource;
-    }
-
-    public int getDefaultPowerInWatt() {
-        return defaultPowerInWatt;
-    }
-
-    public void setDefaultPowerInWatt(int defaultPowerInWatt) {
-        defaultPowerInWatt = defaultPowerInWatt;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -104,7 +71,7 @@ public class Captor {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, site, powerSource, defaultPowerInWatt);
+        return Objects.hash(id, name, site);
     }
 
     @Override

@@ -1,10 +1,7 @@
 package com.training.spring.bigcorp.service.measure;
 
 import com.training.spring.bigcorp.config.properties.BigCorpApplicationProperties;
-import com.training.spring.bigcorp.model.Captor;
-import com.training.spring.bigcorp.model.Measure;
-import com.training.spring.bigcorp.model.MeasureStep;
-import com.training.spring.bigcorp.model.Site;
+import com.training.spring.bigcorp.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +31,7 @@ public class SimulatedMeasureServiceTest {
     /**
      * Captor used in tests
      */
-    private Captor captor = new Captor("test", new Site("Florange"));
+    private Captor captor = new RealCaptor("test", new Site("Florange"));
 
     /**
      * Start instant used in test

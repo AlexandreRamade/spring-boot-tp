@@ -1,6 +1,8 @@
 package com.training.spring.bigcorp.repository;
 
 import com.training.spring.bigcorp.model.Captor;
+import com.training.spring.bigcorp.model.FixedCaptor;
+import com.training.spring.bigcorp.model.RealCaptor;
 import com.training.spring.bigcorp.model.Site;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
@@ -29,9 +31,6 @@ public class CaptorDaoImplTest {
     private CaptorDao captorDao;
 
     @Autowired
-    SiteDao siteDao;
-
-    @Autowired
     private EntityManager entityManager;
 
     @Test
@@ -49,7 +48,7 @@ public class CaptorDaoImplTest {
         Assertions.assertThat(captorDao.findAll()).hasSize(2);
         Site site = new Site("Nouveau site");
         site.setId("site1");
-        captorDao.save(new Captor("New captor", site));
+        captorDao.save(new RealCaptor("New captor", site));
 
         Assertions.assertThat(captorDao.findAll())
                 .hasSize(3)
@@ -99,7 +98,7 @@ public class CaptorDaoImplTest {
     @Test
     public void delete() {
 
-        Captor newCaptor = new Captor("Nouveau capteur", captorDao.findById("c1").get().getSite());
+        Captor newCaptor = new RealCaptor("Nouveau capteur", captorDao.findById("c1").get().getSite());
         captorDao.save(newCaptor);
         Assertions.assertThat(captorDao.findAll()).hasSize(3);
         captorDao.delete(newCaptor);
@@ -126,9 +125,7 @@ public class CaptorDaoImplTest {
                 .withIgnorePaths("id", "powerSource", "defaultPowerInWatt")
                 .withIgnoreNullValues();
 
-        Site site = siteDao.getOne("site1");
-        //Captor captor = new Captor("olien", captorDao.findById("c1").get().getSite());
-        Captor captor = new Captor("Eolienne",site);
+        Captor captor = new FixedCaptor("olien", captorDao.findById("c1").get().getSite(), 10000000);
         List<Captor> captors = captorDao.findAll(Example.of(captor, matcher));
 
         Assertions.assertThat(captors)
