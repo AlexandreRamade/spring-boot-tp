@@ -14,6 +14,9 @@ public abstract class Captor {
     @Id
     private String id = UUID.randomUUID().toString();
 
+    @Version
+    private Integer version;
+
     /**
      * Captor name
      */
@@ -42,6 +45,14 @@ public abstract class Captor {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public String getName() {
