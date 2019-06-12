@@ -1,28 +1,32 @@
 package com.training.spring.bigcorp.model;
 
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+@Entity
+@Table(name="SITE")
 public class Site {
     /**
      * Site id
      */
+    @Id
     private String id = UUID.randomUUID().toString();
 
     /**
      * Site name
      */
+    @Column(name="name", nullable = false)
     private String name;
 
     /**
      * Site captors
      */
+    @OneToMany(mappedBy = "site")
     private Set<Captor> captors;
 
-    @Deprecated
     public Site() {
-        // Use for serializer or deserializer
     }
 
     /**

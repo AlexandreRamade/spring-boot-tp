@@ -1,5 +1,6 @@
 package com.training.spring.bigcorp.service.measure;
 
+import com.training.spring.bigcorp.config.properties.BigCorpApplicationProperties;
 import com.training.spring.bigcorp.model.Captor;
 import com.training.spring.bigcorp.model.Measure;
 import com.training.spring.bigcorp.model.MeasureStep;
@@ -7,9 +8,12 @@ import com.training.spring.bigcorp.model.Site;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.Entity;
 import java.time.Instant;
 import java.util.List;
 
@@ -17,11 +21,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {MeasureServiceConfigurationTest.class})
+//@ContextConfiguration(classes = {MeasureServiceConfigurationTest.class})
+@SpringBootTest(classes = {FixedMeasureService.class, BigCorpApplicationProperties.class})
+@EnableConfigurationProperties
 public class FixedMeasureServiceTest {
 
     @Autowired
     private FixedMeasureService service;
+
+    @Autowired
+    private BigCorpApplicationProperties bigCorpApplicationProperties;
 
     /**
      * Captor used in tests
@@ -56,7 +65,7 @@ public class FixedMeasureServiceTest {
         assertThat(measures).hasSize(24);
 
         //For the moment we have always the same value
-        assertThat(measures).extracting(Measure::getValueInWatt).contains(10_000_000);
+        assertThat(measures).extracting(Measure::getValueInWatt).contains(bigCorpApplicationProperties.getMeasure().getDefaultFixed());
 
         //And we have a value for each hour of the period
         assertThat(measures)

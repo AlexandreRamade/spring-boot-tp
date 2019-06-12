@@ -1,27 +1,38 @@
 package com.training.spring.bigcorp.model;
 
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.Objects;
 
+@Entity
+@Table(name="MEASURE")
 public class Measure {
 
+    @Id
+    @GeneratedValue
     private Long id;
 
     /**
      * Moment the measurement was made
      */
+    @Column(name="instant", nullable = false)
     private Instant instant;
 
     /**
      * Value of the measure in Watt
      */
+    @Column(name="value_in_watt", nullable = false)
     private Integer valueInWatt;
 
     /**
      * Captor that made the measurement
      */
+    @ManyToOne
+    @JoinColumn(name="captor_id", nullable = false)
     private Captor captor;
 
+    public Measure() {
+    }
 
     /**
      * Constructor to use with required property
