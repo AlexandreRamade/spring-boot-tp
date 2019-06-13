@@ -14,7 +14,12 @@ public abstract class Captor {
      * Captor id
      */
     @Id
-    private String id = UUID.randomUUID().toString();
+    private String id;
+
+    @PrePersist
+    public void generateId() {
+        this.id = UUID.randomUUID().toString();
+    }
 
     @Version
     private Integer version;
@@ -30,6 +35,10 @@ public abstract class Captor {
     @JoinColumn(name="site_id", nullable = false)
     private Site site;
 
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private PowerSource powerSource;
+
     public Captor() {
     }
 
@@ -37,9 +46,10 @@ public abstract class Captor {
      * Constructor to use with required property
      * @param name
      */
-    public Captor(String name, Site site) {
+    public Captor(String name, Site site, PowerSource powerSource) {
         this.name = name;
         this.site = site;
+        this.powerSource = powerSource;
     }
 
     public String getId() {
@@ -74,6 +84,13 @@ public abstract class Captor {
         this.site = site;
     }
 
+    public PowerSource getPowerSource() {
+        return powerSource;
+    }
+
+    public void setPowerSource(PowerSource powerSource) {
+        this.powerSource = powerSource;
+    }
 
     @Override
     public boolean equals(Object o) {

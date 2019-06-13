@@ -29,6 +29,9 @@ public class CaptorDaoImplTest {
     private CaptorDao captorDao;
 
     @Autowired
+    private MeasureDao measureDao;
+
+    @Autowired
     private EntityManager entityManager;
 
     @Test
@@ -183,5 +186,11 @@ public class CaptorDaoImplTest {
                 .hasMessageContaining("minPowerInWatt should be less than maxPowerInWatt");
     }
 
-
+    @Test
+    public void deleteBySiteId() {
+        Assertions.assertThat(captorDao.findBySiteId("site1")).hasSize(2);
+        measureDao.deleteAll();
+        captorDao.deleteBySiteId("site1");
+        Assertions.assertThat(captorDao.findBySiteId("site1")).isEmpty();
+    }
 }

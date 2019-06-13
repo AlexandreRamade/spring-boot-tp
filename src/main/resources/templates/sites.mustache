@@ -1,0 +1,39 @@
+<html lang="fr">
+<head>
+    <title>Sites BigCorp</title>
+    {{> partial-import}}
+</head>
+<body>
+    {{> partial-header}}
+
+    <div class="container">
+        <h1>Liste des sites</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Capteurs</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#sites}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>
+                        <ul>
+                            {{#captors}}
+                            <li>{{name}}</li>
+                            {{/captors}}
+                        </ul>
+                    </td>
+                    <td><a class="btn btn-primary" href="/sites/{{id}}" role="button">Editer</a></td>
+                </tr>
+                {{/sites}}
+            </tbody>
+        </table>
+        <a class="btn btn-primary" href="/sites/create" role="button">Nouveau site</a>
+    </div>
+    {{> partial-footer}}
+</body>
+</html>

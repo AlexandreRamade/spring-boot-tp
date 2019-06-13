@@ -107,4 +107,13 @@ public class MeasureDaoImplTest {
                 .isExactlyInstanceOf(ObjectOptimisticLockingFailureException.class);
     }
 
+    @Test
+    public void deleteByCaptorId() {
+        Assertions.assertThat(measureDao.findAll().stream().filter(m ->
+                m.getCaptor().getId().equals("c1"))).hasSize(5);
+        measureDao.deleteByCaptorId("c1");
+        Assertions.assertThat(measureDao.findAll().stream().filter(m ->
+                m.getCaptor().getId().equals("c1"))).isEmpty();
+    }
+
 }

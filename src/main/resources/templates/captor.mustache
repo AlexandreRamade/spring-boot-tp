@@ -1,0 +1,130 @@
+<html>
+<head>
+    <title>Captor BigCorp</title>
+    {{> partial-import}}
+
+    <script>
+        function changePowerSource(value){
+            if(value ==='FIXED'){
+                $('.fixed-captor').show();
+            } else{
+                $('.fixed-captor').hide();
+            }
+
+            if(value ==='SIMULATED'){
+                $('.simulated-captor').show();
+            } else{
+                $('.simulated-captor').hide();
+            }
+        }
+    </script>
+</head>
+<body onload="changePowerSource(document.forms[0]['powerSource'].value)">
+    {{> partial-header}}
+
+    <div class="container">
+        {{#captor.id}}<h1>Modification capteur {{captor.powerSource}}</h1>{{/captor.id}}
+        {{^captor.id}}<h1>Création capteur</h1>{{/captor.id}}
+        <form action="/sites/{{captor.siteId}}/captors/" method="post">
+            {{#captor.id}}
+            <input type="hidden" class="form-control" name="id" value="{{captor.id}}">
+            {{/captor.id}}
+
+            <div class="form-group">
+                <label for="siteName">Site</label>
+                <input type="text" readonly class="form-control" id="siteName"
+                       value="{{captor.siteName}}">
+            </div>
+
+            <div class="form-group">
+                <label for="name">Nom</label>
+                <input type="text" class="form-control" id="name" name="name" required
+                       value="{{#captor.name}}{{captor.name}}{{/captor.name}}"
+                       aria-describedby="nameHelp" placeholder="Nom du capteur">
+                <small id="nameHelp" class="form-text text-muted">Le nom d'un capteur doit être unique</small>
+            </div>
+
+            <div class="form-group">
+                <label for="powerSource">Type de capteur</label>
+                {{#captor.id}}
+                <input type="text" readonly class="form-control" name="powerSource"
+                       value="{{captor.powerSource}}">
+                {{/captor.id}}
+                {{^captor.id}}
+                <select class="form-control" id="powerSource" name="powerSource"
+                        onchange="changePowerSource(this.value)">
+                    <option value="REAL" selected>Puissance réelle remontée du site</option>
+                    <option value="FIXED">Puissance fixe</option>
+                    <option value="SIMULATED">Puissance simulée</option>
+                </select>
+                {{/captor.id}}
+            </div>
+
+            <!-- affiché uniquement si capteur de type FIXED est selectionné -->
+            <div class="form-group fixed-captor">
+                <label for="defaultPowerInWatt">Puissance par défaut</label>
+                <input type="number" class="form-control" id="defaultPowerInWatt" name="defaultPowerInWatt"
+                       value="{{#captor.defaultPowerInWatt}}{{captor.defaultPowerInWatt}}{{/captor.defaultPowerInWatt}}"
+                       aria-describedby="defaultPowerInWattHelp" placeholder="Puissance par défaut (en W)">
+                <small id="defaultPowerInWattHelp" class="form-text text-muted">Le capteur renverra toujours la même puissance égale à cette valeur saisie</small>
+            </div>
+
+            <!-- affiché uniquement si capteur de type SIMULATED est selectionné -->
+            <div class="form-group simulated-captor">
+                <label for="minPowerInWatt">Puissance minimale</label>
+                <input type="number" class="form-control simulated-captor"
+                       id="minPowerInWatt" name="minPowerInWatt"
+                       value="{{#captor.minPowerInWatt}}{{captor.minPowerInWatt}}{{/captor.minPowerInWatt}}"
+                       aria-describedby="minHelp" placeholder="Puissance minimale (en W)">
+                <small id="minHelp" class="form-text text-muted">La puissance du capteur
+                    sera simulée et sa valeur sera toujous supérieure à cette valeur minimale</small>
+            </div>
+
+            <!-- affiché uniquement si capteur de type SIMULATED est selectionné -->
+            <div class="form-group simulated-captor">
+                <label for="maxPowerInWatt">Puissance maximale</label>
+                <input type="number" class="form-control simulated-captor"
+                       id="maxPowerInWatt" name="maxPowerInWatt"
+                       value="{{#captor.maxPowerInWatt}}{{captor.maxPowerInWatt}}{{/captor.maxPowerInWatt}}"
+                       aria-describedby="maxHelp" placeholder="Puissance maximale (en W)">
+                <small id="maxHelp" class="form-text text-muted">La puissance du capteur
+                    sera simulée et sa valeur sera toujous inférieure à cette valeur maximale</small>
+            </div>
+
+
+            <a class="btn btn-secondary" href="/sites/{{captor.siteId}}">Annuler</a>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            {{#captor.id}}
+            <button type="button" class="btn btn-danger" data-toggle="modal"
+                       data-target="#deleteModal">Supprimer</button>
+            {{/captor.id}}
+        </form>
+    </div>
+
+    {{#captor.id}}
+    <div class="modal" tabindex="-1" role="dialog" id="deleteModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation suppression</h5>
+                    <button type="button" class="close" data-dismiss="modal" arialabel="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Etes vous sûr de vouloir supprimer le capteur <b>{{captor.name}}</b>?</p>
+                </div>
+                <div class="modal-footer">
+                    <form action="/sites/{{captor.siteId}}/captors/{{captor.id}}/delete" method="post">
+                        <button type="button" class="btn btn-secondary" datadismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/captor.id}}
+
+    {{> partial-footer}}
+</body>
+</html>

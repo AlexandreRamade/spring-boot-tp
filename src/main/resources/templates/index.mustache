@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>BigCorp</title>
+    {{> partial-import }}
+</head>
+<body>
+
+    {{> partial-header }}
+
+    <div class="jumbotron">
+        <h1 class="text-center"><img src="/img/logo.svg" width="40%"></h1>
+        <div class="px-0">
+            <p class="lead">BigCorp est un des plus grands producteurs d'alliages métalliques et d'autres produits
+                métalliques. Mais ceci est peu important pour nous, vu que nous sommes là pour apprendre comment fonctionne Spring</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 text-center">
+                <i class="fa fa-globe bg-rounded-icon"></i>
+                <h2>Sites</h2>
+                <p>BigCorp est une entreprise implantée dans le monde entier. Rien que d'y
+                    penser ça ne me donne pas envie</p>
+                <p><a class="btn btn-secondary" href="/sites" role="button">Détails</a></p>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fa fa-chart-bar bg-rounded-icon"></i>
+                <h2>Mesures</h2>
+                <p>BigCorp est comme la plupart des multinationales un gros pollueur. Mais
+                    pour se donner bonne conscience voici notre consommation en temps réel</p>
+                <p><a class="btn btn-secondary" role="button" disabled>Détail</a></p>
+            </div>
+        </div>
+    </div>
+
+    {{> partial-footer}}
+
+</body>
+</html>

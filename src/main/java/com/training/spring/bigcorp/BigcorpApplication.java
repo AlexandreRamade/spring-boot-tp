@@ -11,19 +11,8 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication
 public class BigcorpApplication {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(BigcorpApplication.class);
-
 	public static void main(String[] args) {
-		ApplicationContext context = SpringApplication.run(BigcorpApplication.class, args);
-
-		BigCorpApplicationProperties applicationInfo = context.getBean(BigCorpApplicationProperties.class);
-
-		LOGGER.info("=============================================");
-		LOGGER.info("Application [" + applicationInfo.getName() + "] - version :" + applicationInfo.getVersion());
-		LOGGER.info("plus d'informations sur " + applicationInfo.getWebSiteUrl());
-		LOGGER.info("===============================================");
-
-		context.getBean(SiteService.class).findById("test");
+		SpringApplication.run(BigcorpApplication.class, args);
 	}
 
 }
