@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>BigCorp Login</title>
+    {{> partial-import}}
+</head>
+<body>
+{{> partial-header}}
+<div class="container">
+    <div class="row">
+        <div class="col-md">&nbsp;</div>
+        <div class="col-md-8">
+            <form action="/login" method="post">
+                {{#error}}
+                <div class="alert alert-danger" role="alert">
+                    Login ou mot de passe incorrect
+                </div>
+                {{/error}}
+                <h1>Connexion</h1>
+                <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
+                <p>Veuillez renseigner vos identifiants pour accéder à l'application</p>
+                <div class="form-group">
+                    <label for="username">Login</label>
+                    <input type="text" id="username" name="username" class="formcontrol"/>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" class="formcontrol"/>
+                </div>
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+            </form>
+        </div>
+        <div class="col-md">&nbsp;</div>
+    </div>
+</div>
+
+
+{{> partial-footer}}
+</body>
+</html>

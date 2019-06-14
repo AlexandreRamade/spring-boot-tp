@@ -17,6 +17,20 @@
                     <a class="nav-link disabled" href="/measures">Mesures</a>
                 </li>
             </ul>
+
+            <ul class="nav justify-content-end">
+                <li class="nav-item">
+                    {{#logged}}
+                    <form action="/logout" method="post">
+                        <input type="hidden" name="{{_csrf.parameterName}}"
+                               value="{{_csrf.token}}">
+                        <button type="submit" class="btn btn-link nav-link"><i class="fa falock"></i>Se déconnecter</button>
+                    </form>
+                    {{/logged}}
+                    {{^logged}}<a class="nav-link" href="/formLogin"><i class="fa fa-lockopen"></i>Se connecter</a>{{/logged}}
+                </li>
+            </ul>
+
         </div>
     </nav>
 </header>
