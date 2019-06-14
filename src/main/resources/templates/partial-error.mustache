@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>Erreur {{status}}</title>
+    {{> partial-import}}
+</head>
+<body>
+    {{> partial-header}}
+    <div class="container">
+        <h1>Erreur {{status}}</h1>
+        <div class="alert alert-danger" role="alert">
+            Une erreur de type <b>{{error}}</b> est survenue
+        </div>
+        <table class="table table-bordered">
+            <tr>
+                <th>Heure</th>
+                <td>{{timestamp}}</td>
+            </tr>
+            <tr>
+                <th>Path</th>
+                <td>{{#path}}{{path}}{{/path}}</td>
+            </tr>
+            <tr>
+                <th>Message</th>
+                <td>{{#message}}{{message}}{{/message}}</td>
+            </tr>
+        </table>
+        <hr>
+        <code>{{#trace}}{{trace}}{{/trace}}</code>
+    </div>
+    {{> partial-footer}}
+</body>
+</html>
