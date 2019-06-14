@@ -1,0 +1,79 @@
+<html>
+<head>
+    <title>Mesure site</title>
+    {{> partial-import}}
+    <script>
+        function displayChart(series) {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'area'
+                },
+                title: {
+                    text: 'Puissance consommée'
+                },
+                subtitle: {
+                    text: 'sur les dernières 6 heures'
+                },
+                xAxis: {
+                    type: 'datetime'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Puissance'
+                    }
+                },
+                plotOptions: {
+                    area: {
+                    stacking: 'normal'
+                }
+            },
+            tooltip: {
+                pointFormat: '{series.name} : <b>{point.y:,.0f}</b>'
+                },
+                series: series
+                });
+            }
+
+            function loadChart(...captors) {
+                const promises = captors[0]
+                .map(captor => fetch(`http://localhost:8080/measures/captors/${captor.id}/last/hours/6`)
+            .then(response => response.json())
+            .then(measures => ({name: captor.name, measures:measures})));
+
+            Promise.all(promises).then(values => {
+                if (values.filter(c => !c.name).length > 0) {
+                    $('.alert').show();
+                } else {
+                    $('.alert').hide();
+                    const series = values.map(captor => ({
+                    name: captor.name,
+                    data: captor.measures.map(m => ({
+                    x: moment(m.instant).toDate().getTime(),
+                    y: m.valueInWatt
+                    }))
+                }));
+            displayChart(series);
+        }
+        }).catch(_ => $('.alert').show());
+    }
+    </script>
+</head>
+<body onload="loadChart([{{{captors}}}])">
+    {{> partial-header}}
+    <div class="container">
+        <h1>Mesures de {{site.name}}</h1>
+        <div class="alert alert-danger" role="alert" style="display: none">
+            Erreur lors du chargement des mesures des capteurs du site {{site.name}}
+        </div>
+        <div id="container" class="h-90"></div>
+        <hr>
+        <button onclick="loadChart([{{{captors}}}])" class="btn btnsecondary">
+            Recharger</button>
+    </div>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+    {{> partial-footer}}
+    </body>
+</html>

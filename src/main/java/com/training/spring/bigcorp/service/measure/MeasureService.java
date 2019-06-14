@@ -7,7 +7,7 @@ import com.training.spring.bigcorp.model.MeasureStep;
 import java.time.Instant;
 import java.util.List;
 
-public interface MeasureService {
+public interface MeasureService<T extends Captor> {
 
     /**
      * Retourne effectuant une série de mesure à la fréquence indiquée durant une periode donnée
@@ -24,7 +24,7 @@ public interface MeasureService {
      *
      * @return liste de Measure
      */
-    List<Measure> readMeasures(Captor captor, Instant start, Instant end, MeasureStep step);
+    List<Measure> readMeasures(T captor, Instant start, Instant end, MeasureStep step);
 
     /**
      * Verifie qu'aucun des paramètres n'est null et que la date de début (start) est avant celle de fin (end)
@@ -36,7 +36,7 @@ public interface MeasureService {
      * @param end
      * @param step
      */
-    default void checkReadMeasuresArgs(Captor captor, Instant start, Instant end, MeasureStep step) {
+    default void checkReadMeasuresArgs(T captor, Instant start, Instant end, MeasureStep step) {
         if(captor == null) {
             throw new IllegalArgumentException("captor is required");
         }
